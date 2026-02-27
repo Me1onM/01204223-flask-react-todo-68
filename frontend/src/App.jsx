@@ -16,7 +16,7 @@ function App() {
   async function fetchTodoList() {
     try {
       const response = await fetch(TODOLIST_API_URL);
-      if (!response.ok) { 
+      if (!response.ok) {
         throw new Error('Network error');
       }
       const data = await response.json();
@@ -80,14 +80,23 @@ function App() {
       <ul>
         {todoList.map(todo => (
           <li key={todo.id}>
-            <span className={todo.done ? "done" : ""}>{todo.title}</span>
-            <button onClick={() => {toggleDone(todo.id)}}>Toggle</button>
-            <button onClick={() => {deleteTodo(todo.id)}}>❌</button>
+            <div>
+              <span className={todo.done ? "done" : ""}>{todo.title}</span>
+              <button onClick={() => { toggleDone(todo.id) }}>Toggle</button>
+              <button onClick={() => { deleteTodo(todo.id) }}>❌</button>
+            </div>
+            {todo.comments && todo.comments.length > 0 && (
+              <ul style={{ marginTop: '5px', fontSize: '0.9em', color: '#ccc' }}>
+                {todo.comments.map(comment => (
+                  <li key={comment.id}>💬 {comment.message}</li>
+                ))}
+              </ul>
+            )}
           </li>
         ))}
       </ul>
-      New: <input type="text" value={newTitle} onChange={(e) => {setNewTitle(e.target.value)}} />
-      <button onClick={() => {addNewTodo()}}>Add</button>
+      New: <input type="text" value={newTitle} onChange={(e) => { setNewTitle(e.target.value) }} />
+      <button onClick={() => { addNewTodo() }}>Add</button>
     </>
   )
 }
