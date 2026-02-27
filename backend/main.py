@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import Integer, String, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
@@ -14,6 +15,7 @@ class Base(DeclarativeBase):
     pass
 
 db = SQLAlchemy(app, model_class=Base)
+migrate = Migrate(app, db)
 
 class TodoItem(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -33,7 +35,6 @@ INITIAL_TODOS = [
 ]
 
 with app.app_context():
-    db.create_all()
     if TodoItem.query.count() == 0:
         for item in INITIAL_TODOS:
             db.session.add(item)
