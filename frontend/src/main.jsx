@@ -85,12 +85,16 @@ function App() {
               <button onClick={() => { toggleDone(todo.id) }}>Toggle</button>
               <button onClick={() => { deleteTodo(todo.id) }}>❌</button>
             </div>
-            {todo.comments && todo.comments.length > 0 && (
-              <ul style={{ marginTop: '5px', fontSize: '0.9em', color: '#ccc' }}>
-                {todo.comments.map(comment => (
-                  <li key={comment.id}>💬 {comment.message}</li>
-                ))}
-              </ul>
+
+            {(todo.comments) && (todo.comments.length > 0) && (
+              <>
+                <b>Comments:</b>
+                <ul>
+                  {todo.comments.map(comment => (
+                    <li key={comment.id}>{comment.message}</li>
+                  ))}
+                </ul>
+              </>
             )}
           </li>
         ))}
