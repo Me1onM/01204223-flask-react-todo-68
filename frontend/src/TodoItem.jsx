@@ -6,20 +6,18 @@ function TodoItem({ todo }) {
 
     return (
         <li>
-            <span className={todo.done ? "done" : ""}>{todo.title}</span>
-            <button onClick={() => { toggleDone(todo.id) }}>Toggle</button>
-            <button onClick={() => { deleteTodo(todo.id) }}>❌</button>
+            <div>
+                <span className={todo.done ? "done" : ""}>{todo.title}</span>
+                <button onClick={() => { toggleDone(todo.id) }}>Toggle</button>
+                <button onClick={() => { deleteTodo(todo.id) }}>❌</button>
+            </div>
 
             {todo.comments && todo.comments.length > 0 && (
-                <>
-                    <br />
-                    <b>Comments:</b>
-                    <ul>
-                        {todo.comments.map(comment => (
-                            <li key={comment.id}>{comment.message}</li>
-                        ))}
-                    </ul>
-                </>
+                <ul style={{ marginTop: '5px', fontSize: '0.9em', color: '#ccc' }}>
+                    {todo.comments.map(comment => (
+                        <li key={comment.id}>💬 {comment.message}</li>
+                    ))}
+                </ul>
             )}
 
             <div className="new-comment-forms">
@@ -27,8 +25,7 @@ function TodoItem({ todo }) {
                     type="text"
                     value={newComment}
                     onChange={(e) => {
-                        const value = e.target.value;
-                        setNewComment(value);
+                        setNewComment(e.target.value);
                     }}
                 />
                 <button onClick={() => { addNewComment(todo.id) }}>Add Comment</button>

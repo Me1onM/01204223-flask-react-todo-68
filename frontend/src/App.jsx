@@ -1,7 +1,5 @@
-import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from 'react';
+import './App.css';
 import TodoItem from './TodoItem.jsx';
 
 function App() {
@@ -28,11 +26,11 @@ function App() {
   }
 
   async function toggleDone(id) {
-    const toggle_api_url = `${TODOLIST_API_URL}${id}/toggle/`
+    const toggle_api_url = `${TODOLIST_API_URL}${id}/toggle/`;
     try {
       const response = await fetch(toggle_api_url, {
         method: 'PATCH',
-      })
+      });
       if (response.ok) {
         const updatedTodo = await response.json();
         setTodoList(todoList.map(todo => todo.id === id ? updatedTodo : todo));
@@ -62,7 +60,7 @@ function App() {
   }
 
   async function deleteTodo(id) {
-    const delete_api_url = `${TODOLIST_API_URL}${id}/`
+    const delete_api_url = `${TODOLIST_API_URL}${id}/`;
     try {
       const response = await fetch(delete_api_url, {
         method: 'DELETE',
@@ -75,31 +73,24 @@ function App() {
     }
   }
 
+  function addNewComment(todoId) {
+    console.log("", todoId);
+  }
+
   return (
     <>
       <h1>Todo List</h1>
       <ul>
         {todoList.map(todo => (
-          <li key={todo.id}>
-            <div>
-              <span className={todo.done ? "done" : ""}>{todo.title}</span>
-              <button onClick={() => { toggleDone(todo.id) }}>Toggle</button>
-              <button onClick={() => { deleteTodo(todo.id) }}>❌</button>
-            </div>
-            {todo.comments && todo.comments.length > 0 && (
-              <ul style={{ marginTop: '5px', fontSize: '0.9em', color: '#ccc' }}>
-                {todo.comments.map(comment => (
-                  <li key={comment.id}>💬 {comment.message}</li>
-                ))}
-              </ul>
-            )}
-          </li>
+          <TodoItem
+            key={todo.id}
+            todo={todo}
+          />
         ))}
       </ul>
       New: <input type="text" value={newTitle} onChange={(e) => { setNewTitle(e.target.value) }} />
       <button onClick={() => { addNewTodo() }}>Add</button>
     </>
-  )
-}
+  );
 
-export default App
+  export default App;
