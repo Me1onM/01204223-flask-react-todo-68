@@ -21,7 +21,7 @@ function TodoItem({ todo, toggleDone, deleteTodo, addNewComment }) {
                     <ul style={{ listStyleType: 'circle', paddingLeft: '40px', marginTop: '5px', fontSize: '0.9em', color: '#ccc' }}>
                         {todo.comments.map(comment => (
                             comment.message.trim() !== "" && (
-                                <li key={comment.id}>💬 {comment.message}</li>
+                                <li key={comment.id}>{comment.message}</li>
                             )
                         ))}
                     </ul>
