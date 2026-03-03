@@ -73,8 +73,22 @@ function App() {
     }
   }
 
-  function addNewComment(todoId) {
-    console.log("", todoId);
+  async function addNewComment(todoId, newComment) {
+    try {
+      const url = `${TODOLIST_API_URL}${todoId}/comments/`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 'message': newComment }),
+      });
+      if (response.ok) {
+        await fetchTodoList();
+      }
+    } catch (error) {
+      console.error("Error adding new comment:", error);
+    }
   }
 
   return (
@@ -85,6 +99,9 @@ function App() {
           <TodoItem
             key={todo.id}
             todo={todo}
+            toggleDone={toggleDone}
+            deleteTodo={deleteTodo}
+            addNewComment={addNewComment}
           />
         ))}
       </ul>
@@ -92,5 +109,6 @@ function App() {
       <button onClick={() => { addNewTodo() }}>Add</button>
     </>
   );
+}
 
-  export default App;
+export default App;

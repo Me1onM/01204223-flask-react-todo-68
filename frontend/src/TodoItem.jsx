@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './App.css';
 
-function TodoItem({ todo }) {
+function TodoItem({ todo, toggleDone, deleteTodo, addNewComment }) {
     const [newComment, setNewComment] = useState("");
 
     return (
@@ -28,7 +28,10 @@ function TodoItem({ todo }) {
                         setNewComment(e.target.value);
                     }}
                 />
-                <button onClick={() => { addNewComment(todo.id) }}>Add Comment</button>
+                <button onClick={() => {
+                    addNewComment(todo.id, newComment);
+                    setNewComment("");
+                }}>Add Comment</button>
             </div>
         </li>
     );
