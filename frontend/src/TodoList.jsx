@@ -21,6 +21,10 @@ function TodoList({ apiUrl }) {
                     'Authorization': `Bearer ${accessToken}`
                 }
             });
+            if (response.status === 401) {
+                logout();
+                return;
+            }
             if (!response.ok) {
                 throw new Error('Network error');
             }
@@ -36,7 +40,14 @@ function TodoList({ apiUrl }) {
         try {
             const response = await fetch(toggle_api_url, {
                 method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
             });
+            if (response.status === 401) {
+                logout();
+                return;
+            }
             if (response.ok) {
                 const updatedTodo = await response.json();
                 setTodoList(todoList.map(todo => todo.id === id ? updatedTodo : todo));
@@ -52,9 +63,14 @@ function TodoList({ apiUrl }) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
                 },
                 body: JSON.stringify({ 'title': newTitle }),
             });
+            if (response.status === 401) {
+                logout();
+                return;
+            }
             if (response.ok) {
                 const newTodo = await response.json();
                 setTodoList([...todoList, newTodo]);
@@ -70,7 +86,14 @@ function TodoList({ apiUrl }) {
         try {
             const response = await fetch(delete_api_url, {
                 method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
             });
+            if (response.status === 401) {
+                logout();
+                return;
+            }
             if (response.ok) {
                 setTodoList(todoList.filter(todo => todo.id !== id));
             }
@@ -86,9 +109,14 @@ function TodoList({ apiUrl }) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
                 },
                 body: JSON.stringify({ 'message': newComment }),
             });
+            if (response.status === 401) {
+                logout();
+                return;
+            }
             if (response.ok) {
                 await fetchTodoList();
             }

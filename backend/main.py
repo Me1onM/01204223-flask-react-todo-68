@@ -13,6 +13,7 @@ CORS(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todos.db'
 app.config['JWT_SECRET_KEY'] = 'fdsjkfjioi2rjshr2345hrsh043j5oij5545'
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = False
 jwt = JWTManager(app)
 
 db.init_app(app)

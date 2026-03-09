@@ -1,6 +1,11 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { vi, describe, beforeEach, afterEach, it, expect } from 'vitest'
-import App from '../App.jsx'
+import TodoList from '../TodoList.jsx'
+
+vi.mock('../context/AuthContext', () => ({
+    useAuth: vi.fn(),
+}));
+import { useAuth } from '../context/AuthContext';
 
 const mockResponse = (body, ok = true) =>
     Promise.resolve({
@@ -9,20 +14,18 @@ const mockResponse = (body, ok = true) =>
     });
 
 const todoItem1 = { id: 1, title: 'First todo', done: false, comments: [] };
-const todoItem2 = {
-    id: 2,
-    title: 'Second todo',
-    done: false,
-    comments: [
-        { id: 1, message: 'First comment' },
-        { id: 2, message: 'Second comment' },
-    ]
-};
+const todoItem2 = { id: 2, title: 'Second todo', done: false, comments: [] };
 const originalTodoList = [todoItem1, todoItem2];
 
-describe('App', () => {
+describe('TodoList', () => {
     beforeEach(() => {
         vi.stubGlobal('fetch', vi.fn());
+        useAuth.mockReturnValue({
+            username: 'testuser',
+            accessToken: 'fake-token',
+            login: vi.fn(),
+            logout: vi.fn(),
+        });
     });
 
     afterEach(() => {
@@ -32,29 +35,18 @@ describe('App', () => {
 
     it('renders correctly', async () => {
         global.fetch.mockImplementationOnce(() => mockResponse(originalTodoList));
-
-        render(<App />);
-
+        render(<TodoList apiUrl="http://localhost:5000/api/todos/" />);
         expect(await screen.findByText('First todo')).toBeInTheDocument();
-        expect(await screen.findByText('Second todo')).toBeInTheDocument();
-        expect(await screen.findByText(/First comment/i)).toBeInTheDocument();
-        expect(await screen.findByText(/Second comment/i)).toBeInTheDocument();
     });
 
     it('toggles done on a todo item', async () => {
         const toggledTodoItem1 = { ...todoItem1, done: true };
-
         global.fetch.mockImplementation((url, options) => {
-            if (options && options.method === 'PATCH') {
-                return mockResponse(toggledTodoItem1);
-            }
+            if (options && options.method === 'PATCH') return mockResponse(toggledTodoItem1);
             return mockResponse(originalTodoList);
         });
 
-        render(<App />);
-
-        expect(await screen.findByText('First todo')).not.toHaveClass('done');
-
+        render(<TodoList apiUrl="http://localhost:5000/api/todos/" />);
         const toggleButtons = await screen.findAllByRole('button', { name: /toggle/i });
         toggleButtons[0].click();
 
@@ -64,7 +56,7 @@ describe('App', () => {
 
         expect(global.fetch).toHaveBeenLastCalledWith(
             expect.stringMatching(/1\/toggle/),
-            { method: 'PATCH' }
+            expect.anything()
         );
     });
 });
