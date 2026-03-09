@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from "./context/AuthContext";
+import { useNavigate } from 'react-router-dom';
 import './App.css';
 
 function LoginForm({ loginUrl }) {
@@ -8,6 +9,7 @@ function LoginForm({ loginUrl }) {
     const [errorMessage, setErrorMessage] = useState("");
 
     const { login, username: loggedInUsername } = useAuth();
+    const navigate = useNavigate();
 
     async function handleLogin(e) {
         e.preventDefault();
@@ -23,9 +25,9 @@ function LoginForm({ loginUrl }) {
             if (response.ok) {
                 const data = await response.json();
                 console.log(data);
-                alert("Login successful.  access token = " + data.access_token);
 
                 login(username, data.access_token);
+                navigate('/');
             } else if (response.status === 401) {
                 setErrorMessage("Invalid username or password");
             }
@@ -37,7 +39,6 @@ function LoginForm({ loginUrl }) {
     return (
         <form onSubmit={(e) => { handleLogin(e) }}>
             {errorMessage && <p style={{ color: 'red', fontWeight: 'bold' }}>{errorMessage}</p>}
-
             Username:
             <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
             <br />
@@ -45,7 +46,6 @@ function LoginForm({ loginUrl }) {
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
             <br />
             <button type="submit">Login</button>
-
             {loggedInUsername && <p>User {loggedInUsername} is already logged in.</p>}
         </form>
     );
