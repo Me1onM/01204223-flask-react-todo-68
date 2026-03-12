@@ -2,7 +2,7 @@ from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_requir
 from flask_jwt_extended import JWTManager
 import click
 from models import User
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from flask_migrate import Migrate
 
@@ -12,12 +12,19 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='frontend-static')
 CORS(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI','sqlite:///todos.db') 
-app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY','fdslkfjsdlkufewhjroiewurewrew')
+try:
+    from local_config import CONFIG_DB_URI, CONFIG_JWT_SECRET
+except:
+    CONFIG_DB_URI = 'sqlite:///todos.db'
+    CONFIG_JWT_SECRET = 'fdslkfjsdlkufewhjroiewurewrew'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI', CONFIG_DB_URI)
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', CONFIG_JWT_SECRET)
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = False
+
 jwt = JWTManager(app)
 
 db.init_app(app)
@@ -92,6 +99,14 @@ def login():
     access_token = create_access_token(identity=user.username)
     return jsonify(access_token=access_token)
 
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_frontend(path):
+    static_dir = os.path.join(app.root_path, 'frontend-static')
+    if path and os.path.isfile(os.path.join(static_dir, path)):
+        return send_from_directory('frontend-static', path)
+    return send_from_directory('frontend-static', 'index.html')
+
 @app.cli.command("create-user")
 @click.argument("username")
 @click.argument("full_name")
@@ -109,5 +124,5 @@ def create_user(username, full_name, password):
     db.session.commit()
     click.echo(f"User {username} created successfully.")
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
